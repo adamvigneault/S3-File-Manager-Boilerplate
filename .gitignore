@@ -1,0 +1,11 @@
+# Dependencies
+node_modules
+dist/**/*.*
+
+# Certs
+keys
+temp
+
+# Environment
+.vscode
+.env

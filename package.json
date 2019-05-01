@@ -1,0 +1,25 @@
+{
+  "name": "file-system-boilerplate",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "archiver": "^3.0.0",
+    "aws-sdk": "^2.444.0",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "dotenv": "^7.0.0",
+    "ejs": "^2.6.1",
+    "express": "~4.16.0",
+    "express-sanitizer": "^1.0.5",
+    "http-errors": "~1.6.2",
+    "method-override": "^3.0.0",
+    "mime": "^2.4.2",
+    "mongoose": "^5.5.4",
+    "morgan": "~1.9.0",
+    "multer": "^1.4.1"
+  }
+}

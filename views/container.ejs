@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+  </head>
+  <body>
+    <!--[if lt IE 7]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <header>
+      <h1><%= title %></h1>
+    </header>
+    <main>
+      <form action="./<%= container.id %>/files" enctype="multipart/form-data" method="POST">
+        <input type="file" name="files" id="files" multiple />
+        <button>Submit</button>
+      </form>
+      <section id="fileSet">
+      <h2>Files</h2>
+      <% if (container.files.length > 0) { %>
+      <nav><a href="./<%= container.id %>/files/all">Download ZIP</a></nav>
+      <% } %>
+      <ul id="fileList"><% container.files.forEach((file) => { %>
+        <li class="FileName" id="<%= file._id %>">
+          <input type="checkbox" name="selectedFiles[<%= file._id %>]" />
+          <a href="<%= file.path %>"><%= file.name %></a>
+          <nav><a href="./<%= container.id %>" data-action="delete">delete</a></nav>
+        </li>
+      <% }); %></ul>
+      </section>
+      <% if (container.files.length > 0) { %>
+      <nav>
+        <button type="button" data-action="deleteSelected">Delete Selected</button>
+        <button type="button" data-action="deleteAll">Delete All</button>
+      </nav>
+      <% } %>
+    </main>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script type="text/javascript">
+      $('[data-action=delete]').on('click', deleteFile);
+      $('[data-action=deleteSelected]').on('click', deleteSelected);
+      $('[data-action=deleteAll]').on('click', deleteAll);
+
+      function deleteFile(e) {
+        var $file = $(this.closest('li'))[0];
+
+        try {
+          $.ajax('./<%= container.id %>/files/' + $file.id, {
+            method: 'DELETE',
+            success: function (status) {
+              if (status.success) $file.remove();
+            }
+          });
+        } catch (err) {
+          console.log(err);
+        }
+
+        return false;
+      }
+
+      function deleteSelected(e) {
+        var $fileObjs = $('[name^=selectedFiles]:checked')
+          .closest('li');
+        var fileIds = $fileObjs.map(function (i, $fileObj) { return $fileObj.id })
+          .toArray();
+        
+        try {
+          $.ajax('./<%= container.id %>/files', {
+            method: 'DELETE',
+            data: { files: fileIds.join(',') },
+            success: function (status) {
+              if (status.success) $fileObjs.remove();
+            }
+          });
+        } catch (err) {}
+        return false;
+      }
+
+      function deleteAll(e) {
+        try {
+          $.ajax('./<%= container.id %>/files', {
+            method: 'DELETE',
+            data: { files: 'all' },
+            success: function (status) {
+              if (status.success) $('#fileList').empty();
+            }
+          });
+        } catch (err) {}
+        return false;
+      }
+    </script>
+  </body>
+</html>

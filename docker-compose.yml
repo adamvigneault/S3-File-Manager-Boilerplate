@@ -1,0 +1,25 @@
+version: "3"
+services:
+  mongo:
+    image: mongo:4.0
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - ./src/db:/scripts
+      - ./backups:/var/backups
+    command: mongod --smallfiles --logpath=/dev/null #--quiet
+  app:
+    build: .
+    volumes:
+      - .:/app
+    links:
+      - mongo
+    environment:
+      - DB_HOST=mongo
+      - PORT=80
+      - SECURE_PORT=443
+      - NODE_ENV=production
+      - DEBUG=
+    depends_on:
+      - mongo
