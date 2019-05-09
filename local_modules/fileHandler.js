@@ -68,30 +68,34 @@ class FileHandler {
   }
   getZip(files) {
     return new Promise(async (resolve, reject) => {
-      // Bulk download
-      const tempFile = `${this.uniqueId}.zip`,
-        output = fs.createWriteStream(path.join(this.tempDir, tempFile)),
-        archive = archiver('zip', { zlib: 9 });
-      let filePath, fileStreams;
+      try {
+        // Bulk download
+        const tempFile = `${this.uniqueId}.zip`,
+          output = fs.createWriteStream(path.join(this.tempDir, tempFile)),
+          archive = archiver('zip', { zlib: 9 });
+        let filePath, fileStreams;
 
-      archive.pipe(output);
-      
-      output.on('close', () => {
-        // Archive has finished writing to disk, return it
-        resolve(path.join(this.tempDir, tempFile));
-      });
-      archive.on('error', reject)
-      
-      filePath = files.map(f => ({ key: f.key, path: this.getPath(f) }));
-      // Fetch all selected files from remote
-      fileStreams = await Promise.all(filePath.map(file => new Promise((resolve, reject) => {
-        https.get(file.path, f => resolve({ stream: f, name: file.key.split('/').pop() }));
-      })));
+        archive.pipe(output);
 
-      // All files buffered, append them to the archive
-      fileStreams.forEach(s => archive.append(s.stream, { name: s.name }));
+        output.on('close', () => {
+          // Archive has finished writing to disk, return it
+          resolve(path.join(this.tempDir, tempFile));
+        });
+        archive.on('error', reject)
+        
+        filePath = files.map(f => ({ key: f.key, path: this.getPath(f) }));
+        // Fetch all selected files from remote
+        fileStreams = await Promise.all(filePath.map(file => new Promise((resolve, reject) => {
+          https.get(file.path, f => resolve({ stream: f, name: file.key.split('/').pop() }));
+        })));
 
-      archive.finalize();
+        // All files buffered, append them to the archive
+        fileStreams.forEach(s => archive.append(s.stream, { name: s.name }));
+
+        archive.finalize();
+      } catch (err) {
+        reject(err);
+      }
     });
   }
   set uniqueId(uid) {
