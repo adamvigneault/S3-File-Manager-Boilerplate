@@ -75,6 +75,7 @@ class FileHandler {
       let filePath, fileStreams;
 
       archive.pipe(output);
+      
       output.on('close', () => {
         // Archive has finished writing to disk, return it
         resolve(path.join(this.tempDir, tempFile));
