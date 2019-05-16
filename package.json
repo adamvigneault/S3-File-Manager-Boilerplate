@@ -10,6 +10,7 @@
     "aws-sdk": "^2.444.0",
     "body-parser": "^1.19.0",
     "cookie-parser": "~1.4.3",
+    "cuid": "^2.1.6",
     "debug": "~2.6.9",
     "dotenv": "^7.0.0",
     "ejs": "^2.6.1",

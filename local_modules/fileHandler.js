@@ -3,7 +3,8 @@ const aws = require('aws-sdk'),
   archiver = require('archiver'),
   fs = require('fs'),
   path = require('path'),
-  mime = require('mime');
+  mime = require('mime'),
+  cuid = require('cuid');
 
 class FileHandler {
   constructor(options) {
@@ -70,7 +71,7 @@ class FileHandler {
     return new Promise(async (resolve, reject) => {
       try {
         // Bulk download
-        const tempFile = `${this.uniqueId}.zip`,
+        const tempFile = `${cuid()}.zip`,
           output = fs.createWriteStream(path.join(this.tempDir, tempFile)),
           archive = archiver('zip', { zlib: 9 });
         let filePath, fileStreams;
