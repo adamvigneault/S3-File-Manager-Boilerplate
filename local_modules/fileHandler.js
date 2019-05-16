@@ -49,12 +49,19 @@ class FileHandler {
   
     return this.S3.deleteObjects(s3Params).promise();
   }
-  getPath(file) {
-    return this.S3.getSignedUrl('getObject', {
+  getPath(file, download = false) {
+    const params = {
       Bucket: file.bucket,
       Key: file.key,
       Expires: (60 * 60 * 24) // One day
-    });
+    };
+
+    if (download) {
+      params.ResponseContentDisposition
+        = `attachment; filename="${file.name}"`;
+    }
+
+    return this.S3.getSignedUrl('getObject', params);
   }
   putPath(files) {
     if (!this.bucket) throw 'No bucket configured';
